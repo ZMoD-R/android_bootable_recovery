@@ -52,6 +52,10 @@ ifeq ($(RECOVERY_GRAPHICS_USE_LINELENGTH), true)
 LOCAL_CFLAGS += -DRECOVERY_GRAPHICS_USE_LINELENGTH
 endif
 
+ifeq ($(TW_DISABLE_DOUBLE_BUFFERING), true)
+LOCAL_CFLAGS += -DTW_DISABLE_DOUBLE_BUFFERING
+endif
+
 #Remove the # from the line below to enable event logging
 #TWRP_EVENT_LOGGING := true
 ifeq ($(TWRP_EVENT_LOGGING), true)
@@ -91,6 +95,10 @@ endif
 
 ifeq ($(TW_IGNORE_MT_POSITION_0), true)
 LOCAL_CFLAGS += -DTW_IGNORE_MT_POSITION_0
+endif
+
+ifeq ($(TW_IGNORE_ABS_MT_TRACKING_ID), true)
+LOCAL_CFLAGS += -DTW_IGNORE_ABS_MT_TRACKING_ID
 endif
 
 ifneq ($(TW_INPUT_BLACKLIST),)

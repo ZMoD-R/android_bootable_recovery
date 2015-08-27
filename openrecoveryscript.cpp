@@ -309,12 +309,17 @@ int OpenRecoveryScript::run_script_file(void) {
 					gui_print("Unmounted '%s'\n", mount);
 			} else if (strcmp(command, "set") == 0) {
 				// Set value
+				size_t len = strlen(value);
 				tok = strtok(value, " ");
 				strcpy(value1, tok);
-				tok = strtok(NULL, " ");
-				strcpy(value2, tok);
-				gui_print("Setting '%s' to '%s'\n", value1, value2);
-				DataManager::SetValue(value1, value2);
+				if (len > strlen(value1) + 1) {
+					char *val2 = value + strlen(value1) + 1;
+					gui_print("Setting '%s' to '%s'\n", value1, val2);
+					DataManager::SetValue(value1, val2);
+				} else {
+					gui_print("Setting '%s' to empty\n", value1);
+					DataManager::SetValue(value1, "");
+				}
 			} else if (strcmp(command, "mkdir") == 0) {
 				// Make directory (recursive)
 				DataManager::SetValue("tw_action_text2", "Making Directory");
@@ -375,6 +380,7 @@ int OpenRecoveryScript::run_script_file(void) {
 					LOGINFO("Waiting for child sideload process to exit.\n");
 					waitpid(sideload_child_pid, &status, 0);
 				}
+				property_set("ctl.start", "adbd");
 				gui_print("Sideload finished.\n");
 			} else if (strcmp(command, "fixperms") == 0 || strcmp(command, "fixpermissions") == 0) {
 				ret_val = PartitionManager.Fix_Permissions();
@@ -570,9 +576,14 @@ void OpenRecoveryScript::Run_OpenRecoveryScript(void) {
 	DataManager::SetValue("tw_has_action2", "0");
 	DataManager::SetValue("tw_action2", "");
 	DataManager::SetValue("tw_action2_param", "");
+#ifdef TW_OEM_BUILD
+	DataManager::SetValue("tw_action_text1", "Running Recovery Commands");
+	DataManager::SetValue("tw_complete_text1", "Recovery Commands Complete");
+#else
 	DataManager::SetValue("tw_action_text1", "Running OpenRecoveryScript");
-	DataManager::SetValue("tw_action_text2", "");
 	DataManager::SetValue("tw_complete_text1", "OpenRecoveryScript Complete");
+#endif
+	DataManager::SetValue("tw_action_text2", "");
 	DataManager::SetValue("tw_has_cancel", 0);
 	DataManager::SetValue("tw_show_reboot", 0);
 	if (gui_startPage("action_page", 0, 1) != 0) {
